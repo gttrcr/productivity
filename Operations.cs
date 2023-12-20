@@ -25,6 +25,7 @@ namespace GitSync
                     string currentBranch = Run(null, "git -C " + repoPath + " rev-parse --abbrev-ref HEAD")[0];
                     MutexConsoleWriteLine("Pull (" + currentBranch + ")...", line);
                     Run(null, "git -C " + repoPath + " pull");
+                    Run(null, "git -C " + repoPath + " submodule update --recursive --remote --init");
                     MutexConsoleWriteLine("Check...", line);
                     if (Run(null, "git -C " + repoPath + " diff --stat").Count > 0)
                         MutexConsoleWriteLine("some diff...", line, ConsoleColor.Yellow);
