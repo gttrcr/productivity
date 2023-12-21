@@ -5,7 +5,7 @@ namespace GitSync
 {
     public static class Operations
     {
-        public static void UpdateRepo(string organization, string repo, string path, int line, bool zeroLeft = false)
+        public static void UpdateRepo(string organization, string repo, string path, int line, bool zeroLeft = false, int iterations = 5)
         {
             try
             {
@@ -34,7 +34,10 @@ namespace GitSync
             }
             catch
             {
-                UpdateRepo(organization, repo, path, line, true);
+                if (iterations == 0)
+                    MutexConsoleWriteLine("unable to complete", line, ConsoleColor.Red);
+                else
+                    UpdateRepo(organization, repo, path, line, true, iterations - 1);
             }
         }
     }

@@ -87,7 +87,7 @@ namespace GitSync
                 }
 
                 int line = 0;
-                Parallel.ForEach(orgs.Value.Repo, x => Parallel.ForEach(x.Repo, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++)));
+                Parallel.ForEach(orgs.Value.Repo, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repo, new ParallelOptions { MaxDegreeOfParallelism = 2 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++)));
                 MutexConsoleWriteLine("Done" + Environment.NewLine, line);
             }
             catch (Exception ex)
