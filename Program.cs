@@ -9,9 +9,6 @@ namespace GitSync
     {
         private static void InitialChecks(string[] args, out string configFile)
         {
-            Console.Clear();
-            Console.SetCursorPosition(0, 0);
-
             if (!Exists("git"))
                 throw new Exception("git command must be installed");
 
@@ -57,9 +54,15 @@ namespace GitSync
             Console.SetCursorPosition(left, (y ?? 0) + (y == null ? LineOffset++ : LineOffset));
             ConsoleColor tmp = Console.ForegroundColor;
             Console.ForegroundColor = color;
-            Console.Write(text);
+            Console.WriteLine(text);
             Console.ForegroundColor = tmp;
             ConsoleWriteMutex.ReleaseMutex();
+        }
+
+        public static void ResetScreen()
+        {
+            Console.Clear();
+            Console.SetCursorPosition(0, 0);
         }
 
         public static void Main(string[] args)
@@ -67,19 +70,20 @@ namespace GitSync
             try
             {
                 InitialChecks(args, out string configFile);
-                GitSyncConfig? orgs = JsonSerializer.Deserialize<GitSyncConfig>(File.ReadAllText(configFile));
+                ResetScreen();
+                Config? orgs = JsonSerializer.Deserialize<Config>(File.ReadAllText(configFile));
                 if (orgs == null)
                     throw new Exception("null organization file");
 
-                for (int i = 0; i < orgs.Value.Repo.Count; i++)
+                for (int i = 0; i < orgs.Value.Repos.Count; i++)
                 {
-                    string organization = orgs.Value.Repo.ElementAt(i).Organization;
-                    List<string> repos = orgs.Value.Repo.ElementAt(i).Repo;
+                    string organization = orgs.Value.Repos.ElementAt(i).Organization;
+                    List<string> repos = orgs.Value.Repos.ElementAt(i).Repos;
                     if (repos.Count == 1 && repos[0].Equals("*"))
-                        orgs.Value.Repo[i] = new()
+                        orgs.Value.Repos[i] = new()
                         {
                             Organization = organization,
-                            Repo = new List<string>(Run(new() { new()
+                            Repos = new List<string>(Run(new() { new()
                             {
                                 OSPlatform = OSPlatform.Linux, Command = "gh repo list " + organization + " | awk '{ print $1 }'"  // command for linux
                             } }))
@@ -87,8 +91,14 @@ namespace GitSync
                 }
 
                 int line = 0;
-                Parallel.ForEach(orgs.Value.Repo, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repo, new ParallelOptions { MaxDegreeOfParallelism = 2 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++)));
+                Parallel.ForEach(orgs.Value.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++)));
                 MutexConsoleWriteLine("Done" + Environment.NewLine, line);
+                ResetScreen();
+                if (SomeDiff?.Count == 0)
+                    MutexConsoleWriteLine("Everything is up to date");
+                else
+                    MutexConsoleWriteLine("The following repos are not up to date:");
+                SomeDiff?.ForEach(x => Console.WriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
             }
             catch (Exception ex)
             {

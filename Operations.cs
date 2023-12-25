@@ -5,17 +5,19 @@ namespace GitSync
 {
     public static class Operations
     {
-        public static void UpdateRepo(string organization, string repo, string path, int line, bool zeroLeft = false, int iterations = 5)
+        public static List<Repo>? SomeDiff { get; private set; }
+
+        public static void UpdateRepo(string organization, string name, string path, int line, bool zeroLeft = false, int iterations = 5)
         {
             try
             {
-                repo = repo.Split("/", StringSplitOptions.RemoveEmptyEntries).Last();
-                string repoPath = Path.Combine(path, organization, repo);
+                name = name.Split("/", StringSplitOptions.RemoveEmptyEntries).Last();
+                string repoPath = Path.Combine(path, organization, name);
                 MutexConsoleWriteLine(repoPath + "...", line, ConsoleColor.White, zeroLeft);
                 if (!Directory.Exists(repoPath))
                 {
                     MutexConsoleWriteLine("Clone...", line);
-                    Run(null, "git clone --recurse-submodules -j8 git@github.com:" + organization + "/" + repo + ".git " + repoPath);
+                    Run(null, "git clone --recurse-submodules -j8 git@github.com:" + organization + "/" + name + ".git " + repoPath);
                     MutexConsoleWriteLine("done", line, ConsoleColor.Green);
                 }
                 else
@@ -28,7 +30,11 @@ namespace GitSync
                     Run(null, "git -C " + repoPath + " submodule update --recursive --remote --init");
                     MutexConsoleWriteLine("Check...", line);
                     if (Run(null, "git -C " + repoPath + " diff --stat").Count > 0)
+                    {
+                        SomeDiff ??= new List<Repo>();
+                        SomeDiff.Add(new() { Organization = organization, Name = name, Path = repoPath });
                         MutexConsoleWriteLine("some diff...", line, ConsoleColor.Yellow);
+                    }
                     MutexConsoleWriteLine("done", line, ConsoleColor.Green);
                 }
             }
@@ -37,7 +43,7 @@ namespace GitSync
                 if (iterations == 0)
                     MutexConsoleWriteLine("unable to complete", line, ConsoleColor.Red);
                 else
-                    UpdateRepo(organization, repo, path, line, true, iterations - 1);
+                    UpdateRepo(organization, name, path, line, true, iterations - 1);
             }
         }
     }
