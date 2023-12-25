@@ -7,7 +7,7 @@ namespace GitSync
     {
         public static List<Repo>? SomeDiff { get; private set; }
 
-        public static void UpdateRepo(string organization, string name, string path, int line, bool zeroLeft = false, int iterations = 5)
+        public static void UpdateRepo(string organization, string name, string path, int line, bool zeroLeft, int iterations, bool push)
         {
             try
             {
@@ -34,6 +34,13 @@ namespace GitSync
                         SomeDiff ??= new List<Repo>();
                         SomeDiff.Add(new() { Organization = organization, Name = name, Path = repoPath });
                         MutexConsoleWriteLine("some diff...", line, ConsoleColor.Yellow);
+                        if (push)
+                        {
+                            MutexConsoleWriteLine("push...", line, ConsoleColor.Yellow);
+                            Run(null, "git -C " + repoPath + " add .");
+                            Run(null, "git -C " + repoPath + " commit -m 'gitsync auto push'");
+                            Run(null, "git -C " + repoPath + " push");
+                        }
                     }
                     MutexConsoleWriteLine("done", line, ConsoleColor.Green);
                 }
@@ -43,7 +50,7 @@ namespace GitSync
                 if (iterations == 0)
                     MutexConsoleWriteLine("unable to complete", line, ConsoleColor.Red);
                 else
-                    UpdateRepo(organization, name, path, line, true, iterations - 1);
+                    UpdateRepo(organization, name, path, line, true, iterations - 1, push);
             }
         }
     }
