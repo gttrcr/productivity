@@ -95,14 +95,14 @@ namespace GitSync
                 MutexConsoleWriteLine("Done" + Environment.NewLine, line);
                 ResetScreen();
                 if (SomeDiff?.Count == 0)
-                    MutexConsoleWriteLine("Everything is up to date");
+                    MutexConsoleWriteLine("Everything is up to date", null, ConsoleColor.Green);
                 else
-                    MutexConsoleWriteLine("The following repos are not up to date:");
-                SomeDiff?.ForEach(x => Console.WriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
+                    MutexConsoleWriteLine("The following repos need attention", null, ConsoleColor.Yellow);
+                SomeDiff?.ForEach(x => MutexConsoleWriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
 
                 if (UnableToComplete?.Count != 0)
-                    MutexConsoleWriteLine("The following repos are unale to complete");
-                UnableToComplete?.ForEach(x => Console.WriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
+                    MutexConsoleWriteLine("The following repos are in error", null, ConsoleColor.Red);
+                UnableToComplete?.ForEach(x => MutexConsoleWriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
             }
             catch (Exception ex)
             {
