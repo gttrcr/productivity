@@ -106,7 +106,7 @@ namespace GitSync
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                MutexConsoleWriteLine(ex.Message);
             }
         }
     }
