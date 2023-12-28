@@ -6,13 +6,15 @@ namespace GitSync
     public static class Operations
     {
         public static List<Repo>? SomeDiff { get; private set; }
+        public static List<Repo>? UnableToComplete { get; private set; }
 
         public static void UpdateRepo(string organization, string name, string path, int line, bool zeroLeft, int iterations, bool push)
         {
+            name = name.Split("/", StringSplitOptions.RemoveEmptyEntries).Last();
+            string repoPath = Path.Combine(path, organization, name);
+
             try
             {
-                name = name.Split("/", StringSplitOptions.RemoveEmptyEntries).Last();
-                string repoPath = Path.Combine(path, organization, name);
                 MutexConsoleWriteLine(repoPath + "...", line, ConsoleColor.White, zeroLeft);
                 if (!Directory.Exists(repoPath))
                 {
@@ -48,7 +50,11 @@ namespace GitSync
             catch
             {
                 if (iterations == 0)
+                {
                     MutexConsoleWriteLine("unable to complete", line, ConsoleColor.Red);
+                    UnableToComplete ??= new List<Repo>();
+                    UnableToComplete.Add(new() { Organization = organization, Name = name, Path = repoPath });
+                }
                 else
                     UpdateRepo(organization, name, path, line, true, iterations - 1, push);
             }

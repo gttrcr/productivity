@@ -99,6 +99,10 @@ namespace GitSync
                 else
                     MutexConsoleWriteLine("The following repos are not up to date:");
                 SomeDiff?.ForEach(x => Console.WriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
+
+                if (UnableToComplete?.Count != 0)
+                    MutexConsoleWriteLine("The following repos are unale to complete");
+                UnableToComplete?.ForEach(x => Console.WriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
             }
             catch (Exception ex)
             {
