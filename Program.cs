@@ -94,13 +94,13 @@ namespace GitSync
                 Parallel.ForEach(orgs.Value.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, args.Length == 2 && args[1].Equals("push"))));
                 MutexConsoleWriteLine("Done" + Environment.NewLine, line);
                 ResetScreen();
-                if (SomeDiff?.Count == 0)
+                if (SomeDiff == null || SomeDiff.Count == 0)
                     MutexConsoleWriteLine("Everything is up to date", null, ConsoleColor.Green);
                 else
                     MutexConsoleWriteLine("The following repos need attention", null, ConsoleColor.Yellow);
                 SomeDiff?.ForEach(x => MutexConsoleWriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
 
-                if (UnableToComplete?.Count != 0)
+                if (UnableToComplete != null && UnableToComplete.Count != 0)
                     MutexConsoleWriteLine("The following repos are in error", null, ConsoleColor.Red);
                 UnableToComplete?.ForEach(x => MutexConsoleWriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
             }
