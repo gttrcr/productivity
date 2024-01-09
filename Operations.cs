@@ -1,5 +1,5 @@
-using static GitSync.Program;
-using static Process.Process;
+using static GttrcrGist.MutexConsole;
+using static GttrcrGist.Process;
 
 namespace GitSync
 {
