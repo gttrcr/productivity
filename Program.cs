@@ -91,7 +91,7 @@ namespace GitSync
                 }
 
                 int line = 0;
-                Parallel.ForEach(orgs.Value.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, args.Length == 2 && args[1].Equals("push"))));
+                Parallel.ForEach(orgs.Value.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 3 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, args.Length == 2 && args[1].Equals("push"))));
                 MutexConsoleWriteLine("Done" + Environment.NewLine, line);
                 ResetScreen();
                 if (SomeDiff == null || SomeDiff.Count == 0)
