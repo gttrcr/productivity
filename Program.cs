@@ -45,7 +45,7 @@ namespace GitSync
                     List<string> repos = orgs.Value.Repos.ElementAt(i).Repos;
                     List<string> remoteReposList = new(Run(new() {
                         new() { OSPlatform = OSPlatform.Linux, Command = "gh repo list " + organization + " | awk '{ print $1 }'"  }
-                    }));
+                    }).SelectMany(x => x));
 
                     if (remoteReposList.Count == 0)
                     {
