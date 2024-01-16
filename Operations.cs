@@ -30,7 +30,7 @@ namespace GitSync
                     MutexConsole.WriteLine("Pull (" + currentBranch + ")...", line);
                     Run(null, "git -C " + repoPath + " pull");
                     Run(null, "git -C " + repoPath + " submodule update --recursive --remote --init");
-                    Run(null, "git -C " + repoPath + " submodule foreach git pull origin master");
+                    // Run(null, "git -C " + repoPath + " submodule foreach git pull origin main");
                     MutexConsole.WriteLine("Check...", line);
                     if (Run(null, "git -C " + repoPath + " diff --stat").Count > 0)
                     {
