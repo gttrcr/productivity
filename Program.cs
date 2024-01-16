@@ -57,6 +57,8 @@ namespace GitSync
                 Parallel.ForEach(orgs.Value.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 3 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, args.Length == 2 && args[1].Equals("push"))));
                 MutexConsoleWriteLine("Done" + Environment.NewLine, line);
                 ResetScreen();
+
+                //Last messages
                 if (SomeDiff == null || SomeDiff.Count == 0)
                     MutexConsoleWriteLine("Everything is up to date", null, ConsoleColor.Green);
                 else
@@ -66,6 +68,18 @@ namespace GitSync
                 if (UnableToComplete != null && UnableToComplete.Count != 0)
                     MutexConsoleWriteLine("The following repos are in error", null, ConsoleColor.Red);
                 UnableToComplete?.ForEach(x => MutexConsoleWriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
+
+                orgs.Value.Repos.ForEach(x =>
+                {
+                    List<string> dirs = Directory.GetDirectories(Path.Combine(orgs.Value.Path, x.Organization)).ToList();
+                    List<string> expectedFolders = x.Repos.Select(x => Path.Combine(orgs.Value.Path, x)).ToList();
+                    List<string> diffFolders = dirs.Except(expectedFolders).ToList();
+                    if (diffFolders.Count > 0)
+                    {
+                        MutexConsoleWriteLine("Furthermore, these folders are not repositories of " + x.Organization, null, ConsoleColor.Yellow);
+                        diffFolders?.ForEach(x => MutexConsoleWriteLine(x));
+                    }
+                });
             }
             catch (Exception ex)
             {
