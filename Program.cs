@@ -72,7 +72,7 @@ namespace GitSync
                 orgs.Value.Repos.ForEach(x =>
                 {
                     List<string> dirs = Directory.GetDirectories(Path.Combine(orgs.Value.Path, x.Organization)).ToList();
-                    List<string> expectedFolders = x.Repos.Select(x => Path.Combine(orgs.Value.Path, x)).ToList();
+                    List<string> expectedFolders = x.Repos.Select(y => Path.Combine(orgs.Value.Path, x.Organization, y)).ToList();
                     List<string> diffFolders = dirs.Except(expectedFolders).ToList();
                     if (diffFolders.Count > 0)
                     {
