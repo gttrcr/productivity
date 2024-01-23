@@ -1,6 +1,9 @@
-[submodule "0cabe39db1b21936fd97907a6b5fc8d4"]
-	path = 0cabe39db1b21936fd97907a6b5fc8d4
-	url = git@gist.github.com:0cabe39db1b21936fd97907a6b5fc8d4.git
-[submodule "adcf26e18b4e31f2f2d21c4788ecad0b"]
-	path = adcf26e18b4e31f2f2d21c4788ecad0b
+[submodule "GttrcrGist.Updater"]
+	path = GttrcrGist.Updater
+	url = git@gist.github.com:4ee2507d9636d2d1a6822b561ae5d974.git
+[submodule "GttrcrGist.Processes"]
+	path = GttrcrGist.Processes
 	url = git@gist.github.com:adcf26e18b4e31f2f2d21c4788ecad0b.git
+[submodule "GttrcrGist.MutexConsole"]
+	path = GttrcrGist.MutexConsole
+	url = git@gist.github.com:0cabe39db1b21936fd97907a6b5fc8d4.git
