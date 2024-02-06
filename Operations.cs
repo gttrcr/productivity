@@ -8,7 +8,7 @@ namespace GitSync
         public static List<Repo>? SomeDiff { get; private set; }
         public static List<Repo>? UnableToComplete { get; private set; }
 
-        public static void UpdateRepo(string organization, string name, string path, int line, bool zeroLeft, int iterations, bool push)
+        public static void UpdateRepo(string organization, string name, string path, int line, bool zeroLeft, int iterations, string action)
         {
             name = name.Split("/", StringSplitOptions.RemoveEmptyEntries).Last();
             string repoPath = Path.Combine(path, organization, name);
@@ -37,7 +37,7 @@ namespace GitSync
                         SomeDiff ??= new List<Repo>();
                         SomeDiff.Add(new() { Organization = organization, Name = name, Path = repoPath });
                         MutexConsole.WriteLine("some diff...", line, ConsoleColor.Yellow);
-                        if (push)
+                        if (action.Equals("push"))
                         {
                             MutexConsole.WriteLine("push...", line, ConsoleColor.Yellow);
                             Run(null, "git -C " + repoPath + " add .");
@@ -57,7 +57,7 @@ namespace GitSync
                     UnableToComplete.Add(new() { Organization = organization, Name = name, Path = repoPath });
                 }
                 else
-                    UpdateRepo(organization, name, path, line, true, iterations - 1, push);
+                    UpdateRepo(organization, name, path, line, true, iterations - 1, action);
             }
         }
     }

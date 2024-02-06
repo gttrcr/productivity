@@ -3,13 +3,12 @@ using System.Text.Json;
 using static GttrcrGist.Process;
 using static GitSync.Operations;
 using GttrcrGist;
-using System.Security.Cryptography.X509Certificates;
 
 namespace GitSync
 {
     public class Program
     {
-        private static void InitialChecks(string[] args, out string configFile)
+        private static void InitialChecks(string[] args, out string configFile, out string? action)
         {
             if (!Exists("git"))
                 throw new Exception("git command must be installed");
@@ -23,8 +22,14 @@ namespace GitSync
             if (args.Length > 0 && !File.Exists(args[0]))
                 throw new Exception("Cannot find configuration file " + args[0]);
 
-            if (args.Length > 1)
-                MutexConsole.WriteLine("Skipped parameters after the first");
+            action = null;
+            if (args.Length == 2)
+            {
+                if (args[1].Equals("push"))
+                    action = args[1];
+                else
+                    throw new NotImplementedException("Action " + args[1] + " is not implemented");
+            }
 
             configFile = args[0];
         }
@@ -33,7 +38,7 @@ namespace GitSync
         {
             try
             {
-                InitialChecks(args, out string configFile);
+                InitialChecks(args, out string configFile, out string? action);
                 MutexConsole.Clear();
                 Config? orgs = JsonSerializer.Deserialize<Config>(File.ReadAllText(configFile));
                 if (orgs == null)
@@ -66,7 +71,7 @@ namespace GitSync
                 }
 
                 int line = 0;
-                Parallel.ForEach(orgs.Value.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 3 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, args.Length == 2 && args[1].Equals("push"))));
+                Parallel.ForEach(orgs.Value.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 3 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, action)));
                 MutexConsole.WriteLine("Done", line);
                 MutexConsole.Clear();
 

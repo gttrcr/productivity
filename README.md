@@ -34,3 +34,18 @@ where ```orgs.json``` is just a configuration file for GitSync. The structure of
 }
 ```
 The value ```"*"``` in ```Repo``` key means _every repo_ is the corresponding organization.
+
+## Setup alias using the source code
+```
+cat >>~/.bashrc <<EOL
+
+gitsync() {
+    if [ -z "$1" ]
+    then
+        dotnet run --project ~/gttrcr/GitSync/ ~/gttrcr/GitSync/orgs.json
+    else
+        dotnet run --project ~/gttrcr/GitSync/ ~/gttrcr/GitSync/orgs.json $1
+    fi
+}
+EOL
+```

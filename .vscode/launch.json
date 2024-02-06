@@ -11,7 +11,8 @@
             "preLaunchTask": "build",
             "program": "${workspaceFolder}/bin/Debug/net7.0/GitSync.dll",
             "args": [
-                "orgs.json"
+                "orgs.json",
+                "push"
             ],
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal",
