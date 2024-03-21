@@ -30,9 +30,9 @@ namespace GitSync
                     MutexConsole.WriteLine("Pull (" + currentBranch + ")...", line);
                     Run(null, "git -C " + repoPath + " pull");
                     Run(null, "git -C " + repoPath + " submodule update --recursive --remote --init");
-                    // Run(null, "git -C " + repoPath + " submodule foreach git pull origin main");
                     MutexConsole.WriteLine("Check...", line);
-                    if (Run(null, "git -C " + repoPath + " diff --stat").Count > 0)
+                    Run(null, "git -C " + repoPath + " add .");
+                    if (Run(null, "git -C " + repoPath + " diff --stat --cached").Count > 0)
                     {
                         SomeDiff ??= new List<Repo>();
                         SomeDiff.Add(new() { Organization = organization, Name = name, Path = repoPath });
