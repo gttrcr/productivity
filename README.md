@@ -14,6 +14,7 @@ where ```orgs.json``` is just a configuration file for GitSync. The structure of
             "Repo": [
                 "repo_1",
                 "repo_2",
+                "-repo_3",
             ]
         },
         {
