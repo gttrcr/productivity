@@ -60,13 +60,19 @@ namespace GitSync
 
                     remoteReposList = remoteReposList.Select(x => x.Split('/').Last()).ToList();
 
-                    if (repos.Count == 1 && repos[0].Equals("*"))
+                    if (repos.Contains("*"))
                         orgs.Value.Repos[i] = new() { Organization = organization, Repos = new(remoteReposList) };
                     else
                     {
                         List<string> mismatchRepos = repos.Except(remoteReposList).ToList();
                         mismatchRepos.ForEach(x => MutexConsole.WriteLine("Remote repo " + x + " in organization " + organization + " does not exists", null, ConsoleColor.Yellow));
                         orgs.Value.Repos[i] = new() { Organization = organization, Repos = new(repos.Except(mismatchRepos)) };
+                    }
+
+                    if (repos.Any(x => x.StartsWith('-')))
+                    {
+                        List<string> toRemove = repos.Where(x => x.StartsWith('-')).Select(x => x.Substring(1, x.Length - 1)).ToList();
+                        orgs.Value.Repos[i] = new() { Organization = organization, Repos = new(orgs.Value.Repos[i].Repos.Where(x => !toRemove.Contains(x))) };
                     }
                 }
 
