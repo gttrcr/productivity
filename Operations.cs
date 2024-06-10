@@ -34,7 +34,7 @@ namespace GitSync
                     Run(null, "git -C " + repoPath + " add .");
                     if (Run(null, "git -C " + repoPath + " diff --stat --cached").Count > 0)
                     {
-                        SomeDiff ??= new List<Repo>();
+                        SomeDiff ??= [];
                         SomeDiff.Add(new() { Organization = organization, Name = name, Path = repoPath });
                         MutexConsole.WriteLine("some diff...", line, ConsoleColor.Yellow);
                         if (action != null && action.Equals("push"))
@@ -53,7 +53,7 @@ namespace GitSync
                 if (iterations == 0)
                 {
                     MutexConsole.WriteLine("unable to complete", line, ConsoleColor.Red);
-                    UnableToComplete ??= new List<Repo>();
+                    UnableToComplete ??= [];
                     UnableToComplete.Add(new() { Organization = organization, Name = name, Path = repoPath });
                 }
                 else
