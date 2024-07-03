@@ -52,8 +52,7 @@ namespace GitSync
                         "http://www.gstatic.com/generate_204",
                 };
 
-                var request = new HttpClient().GetAsync(url).Result;
-                request.EnsureSuccessStatusCode();
+                new HttpClient().GetAsync(url).Result.EnsureSuccessStatusCode();
                 return true;
             }
             catch
