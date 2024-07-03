@@ -4,7 +4,6 @@ using static GttrcrGist.Process;
 using static GitSync.Operations;
 using GttrcrGist;
 using System.Globalization;
-using System.Net;
 
 namespace GitSync
 {
@@ -36,7 +35,7 @@ namespace GitSync
             configFile = args[0];
 
             if (!CheckForInternetConnection())
-                throw new Exception("Not internet connection");
+                throw new Exception("No internet connection");
         }
 
         public static bool CheckForInternetConnection(int timeoutMs = 10000, string? url = null)
@@ -53,10 +52,8 @@ namespace GitSync
                         "http://www.gstatic.com/generate_204",
                 };
 
-                var request = (HttpWebRequest)WebRequest.Create(url);
-                request.KeepAlive = false;
-                request.Timeout = timeoutMs;
-                using var response = (HttpWebResponse)request.GetResponse();
+                var request = new HttpClient().GetAsync(url).Result;
+                request.EnsureSuccessStatusCode();
                 return true;
             }
             catch
@@ -69,8 +66,8 @@ namespace GitSync
         {
             try
             {
-                InitialChecks(args, out string configFile, out string? action);
                 MutexConsole.Clear();
+                InitialChecks(args, out string configFile, out string? action);
                 Config? orgs = JsonSerializer.Deserialize<Config>(File.ReadAllText(configFile));
                 if (orgs == null)
                     throw new Exception("null organization file");
