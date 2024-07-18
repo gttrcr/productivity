@@ -1,6 +1,3 @@
-[submodule "GttrcrGist.Processes"]
-	path = GttrcrGist.Processes
-	url = git@gist.github.com:adcf26e18b4e31f2f2d21c4788ecad0b.git
-[submodule "GttrcrGist.MutexConsole"]
-	path = GttrcrGist.MutexConsole
-	url = git@gist.github.com:0cabe39db1b21936fd97907a6b5fc8d4.git
+[submodule "GttrcrGist"]
+	path = GttrcrGist
+	url = https://github.com/gttrcr/GttrcrGist
