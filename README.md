@@ -50,3 +50,9 @@ gitsync() {
 }
 EOL
 ```
+
+Consider the command for future improvements
+```bash
+git submodule update --remote --recursive --merge --init --force
+git submodule foreach git pull
+```
