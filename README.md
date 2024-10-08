@@ -11,10 +11,10 @@ where ```orgs.json``` is just a configuration file for GitSync. The structure of
 
 ```json
 {
-    "Repo": [
+    "Organizations": [
         {
             "Organization": "name_of_organization_1",
-            "Repo": [
+            "Repos": [
                 "repo_1",
                 "repo_2",
                 "-repo_3",
@@ -22,14 +22,14 @@ where ```orgs.json``` is just a configuration file for GitSync. The structure of
         },
         {
             "Organization": "name_of_organization_2",
-            "Repo": [
+            "Repos": [
                 "repo_1",
                 "repo_2",
             ]
         },
         {
             "Organization": "name_of_organization_3",
-            "Repo": [
+            "Repos": [
                 "*"
             ]
         },
@@ -38,7 +38,7 @@ where ```orgs.json``` is just a configuration file for GitSync. The structure of
 }
 ```
 
-The value ```"*"``` in ```Repo``` key means _every repo_ is the corresponding organization.
+The value ```"*"``` in ```Repos``` key means _every repo_ is the corresponding organization.
 
 ## Setup alias using the source code
 
@@ -48,9 +48,9 @@ cat >>~/.bashrc <<EOL
 gitsync() {
     if [ -z "$1" ]
     then
-        dotnet run --project ~/gttrcr/GitSync/ ~/gttrcr/GitSync/orgs.json
+        dotnet run --project path_to_folder/GitSync/ path_to_folder/GitSync/orgs.json
     else
-        dotnet run --project ~/gttrcr/GitSync/ ~/gttrcr/GitSync/orgs.json $1
+        dotnet run --project path_to_folder/GitSync/ path_to_folder/GitSync/orgs.json $1
     fi
 }
 EOL

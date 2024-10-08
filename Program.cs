@@ -71,10 +71,10 @@ namespace GitSync
                 if (orgs == null)
                     throw new Exception("null organization file");
 
-                for (int i = 0; i < orgs.Value.Repos.Count; i++)
+                for (int i = 0; i < orgs.Value.Organizations.Count; i++)
                 {
-                    string organization = orgs.Value.Repos.ElementAt(i).Organization;
-                    List<string> repos = orgs.Value.Repos.ElementAt(i).Repos;
+                    string organization = orgs.Value.Organizations.ElementAt(i).Organization;
+                    List<string> repos = orgs.Value.Organizations.ElementAt(i).Repos;
                     List<string> remoteReposList = new(Run([new() { OSPlatform = OSPlatform.Linux, Command = "gh repo list " + organization + " | awk '{ print $1 }'" }]).SelectMany(x => x));
 
                     if (remoteReposList.Count == 0)
@@ -86,23 +86,23 @@ namespace GitSync
                     remoteReposList = remoteReposList.Select(x => x.Split('/').Last()).ToList();
 
                     if (repos.Contains("*"))
-                        orgs.Value.Repos[i] = new() { Organization = organization, Repos = new(remoteReposList) };
+                        orgs.Value.Organizations[i] = new() { Organization = organization, Repos = new(remoteReposList) };
                     else
                     {
                         List<string> mismatchRepos = repos.Except(remoteReposList).ToList();
                         mismatchRepos.ForEach(x => MutexConsole.WriteLine("Remote repo " + x + " in organization " + organization + " does not exists", null, ConsoleColor.Yellow));
-                        orgs.Value.Repos[i] = new() { Organization = organization, Repos = new(repos.Except(mismatchRepos)) };
+                        orgs.Value.Organizations[i] = new() { Organization = organization, Repos = new(repos.Except(mismatchRepos)) };
                     }
 
                     if (repos.Any(x => x.StartsWith('-')))
                     {
                         List<string> toRemove = repos.Where(x => x.StartsWith('-')).Select(x => x.Substring(1, x.Length - 1)).ToList();
-                        orgs.Value.Repos[i] = new() { Organization = organization, Repos = new(orgs.Value.Repos[i].Repos.Where(x => !toRemove.Contains(x))) };
+                        orgs.Value.Organizations[i] = new() { Organization = organization, Repos = new(orgs.Value.Organizations[i].Repos.Where(x => !toRemove.Contains(x))) };
                     }
                 }
 
                 int line = 0;
-                Parallel.ForEach(orgs.Value.Repos, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 3 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, action)));
+                Parallel.ForEach(orgs.Value.Organizations, new ParallelOptions { MaxDegreeOfParallelism = 2 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 3 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, action)));
                 MutexConsole.WriteLine("Done", line);
                 MutexConsole.Clear();
 
@@ -119,7 +119,7 @@ namespace GitSync
                 UnableToComplete?.OrderBy(x => x.Organization).ToList().ForEach(x => MutexConsole.WriteLine(x.Organization + "\t" + x.Name + "\t" + x.Path));
 
                 //Not found repositories on remote
-                orgs.Value.Repos.ForEach(x =>
+                orgs.Value.Organizations.ForEach(x =>
                 {
                     List<string> dirs = Directory.GetDirectories(Path.Combine(orgs.Value.Path, x.Organization)).ToList();
                     List<string> expectedFolders = x.Repos.Select(y => Path.Combine(orgs.Value.Path, x.Organization, y)).ToList();

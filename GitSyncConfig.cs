@@ -7,7 +7,7 @@ namespace GitSync
         public string Path { get; set; }
     }
 
-    public struct RepoConfig
+    public struct OrganizationConfig
     {
         public string Organization { get; set; }
         public List<string> Repos { get; set; }
@@ -15,7 +15,7 @@ namespace GitSync
 
     public struct Config
     {
-        public List<RepoConfig> Repos { get; set; }
+        public List<OrganizationConfig> Organizations { get; set; }
         public string Path { get; set; }
     }
 }
