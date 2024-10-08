@@ -1,11 +1,14 @@
 # GitSync
 
 GitSync is a file manager based on GitHub. It is written in c# and compiled under dotnet. Hence,
-```
+
+```bash
 sudo apt install dotnet7 -y
 dotnet run orgs.json
 ```
+
 where ```orgs.json``` is just a configuration file for GitSync. The structure of the ```orgs.json``` is the following:
+
 ```json
 {
     "Repo": [
@@ -34,10 +37,12 @@ where ```orgs.json``` is just a configuration file for GitSync. The structure of
     "Path": "root/of/your/organizations"
 }
 ```
+
 The value ```"*"``` in ```Repo``` key means _every repo_ is the corresponding organization.
 
 ## Setup alias using the source code
-```
+
+```bash
 cat >>~/.bashrc <<EOL
 
 gitsync() {
@@ -52,6 +57,7 @@ EOL
 ```
 
 Consider the command for future improvements
+
 ```bash
 git submodule update --remote --recursive --merge --init --force
 git submodule foreach git pull
