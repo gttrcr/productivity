@@ -84,7 +84,9 @@ namespace GitSync
                     }
 
                     remoteReposList = remoteReposList.Select(x => x.Split('/').Last()).ToList();
-                    remoteReposList = remoteReposList.Where(x => Run([new() { OSPlatform = OSPlatform.Linux, Command = $"gh repo view {organization}/{x} --json isArchived --jq '.isArchived'" }]).SelectMany(x => x).ToList()[0] == "false").ToList();
+
+                    if (orgs.Value.ExcludeArchived)
+                        remoteReposList = remoteReposList.Where(x => Run([new() { OSPlatform = OSPlatform.Linux, Command = $"gh repo view {organization}/{x} --json isArchived --jq '.isArchived'" }]).SelectMany(x => x).ToList()[0] == "false").ToList();
 
                     if (repos.Contains("*"))
                         orgs.Value.Organizations[i] = new() { Organization = organization, Repos = new(remoteReposList) };
