@@ -15,7 +15,7 @@
                 "push"
             ],
             "cwd": "${workspaceFolder}",
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
             "stopAtEntry": false
         },
         {

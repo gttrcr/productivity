@@ -84,6 +84,7 @@ namespace GitSync
                     }
 
                     remoteReposList = remoteReposList.Select(x => x.Split('/').Last()).ToList();
+                    remoteReposList = remoteReposList.Where(x => Run([new() { OSPlatform = OSPlatform.Linux, Command = $"gh repo view {organization}/{x} --json isArchived --jq '.isArchived'" }]).SelectMany(x => x).ToList()[0] == "false").ToList();
 
                     if (repos.Contains("*"))
                         orgs.Value.Organizations[i] = new() { Organization = organization, Repos = new(remoteReposList) };
@@ -121,7 +122,7 @@ namespace GitSync
                 //Not found repositories on remote
                 orgs.Value.Organizations.ForEach(x =>
                 {
-                    List<string> dirs = Directory.GetDirectories(Path.Combine(orgs.Value.Path, x.Organization)).ToList();
+                    List<string> dirs = [.. Directory.GetDirectories(Path.Combine(orgs.Value.Path, x.Organization))];
                     List<string> expectedFolders = x.Repos.Select(y => Path.Combine(orgs.Value.Path, x.Organization, y)).ToList();
                     List<string> mismatchFolders = dirs.Except(expectedFolders).ToList();
                     if (mismatchFolders.Count > 0)

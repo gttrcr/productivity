@@ -17,5 +17,6 @@ namespace GitSync
     {
         public List<OrganizationConfig> Organizations { get; set; }
         public string Path { get; set; }
+        public bool ExcludeArchived { get; set; }
     }
 }
