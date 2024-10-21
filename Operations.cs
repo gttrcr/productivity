@@ -29,10 +29,10 @@ namespace GitSync
                     string currentBranch = Run(null, "git -C " + repoPath + " rev-parse --abbrev-ref HEAD")[0];
                     MutexConsole.WriteLine("Pull (" + currentBranch + ")...", line);
                     Run(null, "git -C " + repoPath + " pull");
-                    Run(null, "git -C " + repoPath + " submodule update --recursive --remote --init");
+                    Run(null, "git -C " + repoPath + " submodule update --recursive --init");
                     MutexConsole.WriteLine("Check...", line);
                     Run(null, "git -C " + repoPath + " add .");
-                    if (Run(null, "git -C " + repoPath + " diff --stat --cached").Count > 0)
+                    if (Run(null, "git -C " + repoPath + " diff --stat").Count > 0)
                     {
                         SomeDiff ??= [];
                         SomeDiff.Add(new() { Organization = organization, Name = name, Path = repoPath });
