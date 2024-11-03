@@ -105,7 +105,7 @@ namespace GitSync
                 }
 
                 int line = 0;
-                Parallel.ForEach(orgs.Value.Organizations, new ParallelOptions { MaxDegreeOfParallelism = 3 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 3 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, action)));
+                Parallel.ForEach(orgs.Value.Organizations, new ParallelOptions { MaxDegreeOfParallelism = 5 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 5 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, action)));
                 MutexConsole.WriteLine("Done", line);
                 MutexConsole.Clear();
 
