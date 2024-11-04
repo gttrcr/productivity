@@ -77,6 +77,7 @@ namespace GitSync
                     List<string> repos = orgs.Value.Organizations.ElementAt(i).Repos;
                     List<string> remoteReposList = new(Run([new() { OSPlatform = OSPlatform.Linux, Command = "gh repo list " + organization + " | awk '{ print $1 }'" }]).SelectMany(x => x));
 
+                    MutexConsole.WriteLine("Preparing " + organization + "...", null, ConsoleColor.Yellow);
                     if (remoteReposList.Count == 0)
                     {
                         MutexConsole.WriteLine("No remote repos for organization " + organization, null, ConsoleColor.Yellow);
