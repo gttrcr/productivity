@@ -75,7 +75,7 @@ namespace GitSync
                 {
                     string organization = orgs.Value.Organizations.ElementAt(i).Organization;
                     List<string> repos = orgs.Value.Organizations.ElementAt(i).Repos;
-                    List<string> remoteReposList = new(Run([new() { OSPlatform = OSPlatform.Linux, Command = "gh repo list " + organization + " | awk '{ print $1 }'" }]).SelectMany(x => x));
+                    List<string> remoteReposList = [.. Run([new() { OSPlatform = OSPlatform.Linux, Command = "gh repo list " + organization + " | awk '{ print $1 }'" }]).SelectMany(x => x)];
 
                     MutexConsole.WriteLine("Preparing " + organization + "...", null, ConsoleColor.Yellow);
                     if (remoteReposList.Count == 0)
@@ -84,31 +84,33 @@ namespace GitSync
                         continue;
                     }
 
-                    remoteReposList = remoteReposList.Select(x => x.Split('/').Last()).ToList();
+                    remoteReposList = [.. remoteReposList.Select(x => x.Split('/').Last())];
 
                     if (orgs.Value.ExcludeArchived)
-                        remoteReposList = remoteReposList.Where(x => Run([new() { OSPlatform = OSPlatform.Linux, Command = $"gh repo view {organization}/{x} --json isArchived --jq '.isArchived'" }]).SelectMany(x => x).ToList()[0] == "false").ToList();
+                        remoteReposList = [.. remoteReposList.Where(x => Run([new() { OSPlatform = OSPlatform.Linux, Command = $"gh repo view {organization}/{x} --json isArchived --jq '.isArchived'" }]).SelectMany(x => x).ToList()[0] == "false")];
 
                     if (repos.Contains("*"))
-                        orgs.Value.Organizations[i] = new() { Organization = organization, Repos = new(remoteReposList) };
+                        orgs.Value.Organizations[i] = new() { Organization = organization, Repos = [.. remoteReposList] };
                     else
                     {
-                        List<string> mismatchRepos = repos.Except(remoteReposList).ToList();
+                        List<string> mismatchRepos = [.. repos.Except(remoteReposList)];
                         mismatchRepos.ForEach(x => MutexConsole.WriteLine("Remote repo " + x + " in organization " + organization + " does not exists", null, ConsoleColor.Yellow));
-                        orgs.Value.Organizations[i] = new() { Organization = organization, Repos = new(repos.Except(mismatchRepos)) };
+                        orgs.Value.Organizations[i] = new() { Organization = organization, Repos = [.. repos.Except(mismatchRepos)] };
                     }
 
                     if (repos.Any(x => x.StartsWith('-')))
                     {
-                        List<string> toRemove = repos.Where(x => x.StartsWith('-')).Select(x => x.Substring(1, x.Length - 1)).ToList();
-                        orgs.Value.Organizations[i] = new() { Organization = organization, Repos = new(orgs.Value.Organizations[i].Repos.Where(x => !toRemove.Contains(x))) };
+                        List<string> toRemove = [.. repos.Where(x => x.StartsWith('-')).Select(x => x.Substring(1, x.Length - 1))];
+                        orgs.Value.Organizations[i] = new() { Organization = organization, Repos = [.. orgs.Value.Organizations[i].Repos.Where(x => !toRemove.Contains(x))] };
                     }
                 }
 
                 int line = 0;
                 Parallel.ForEach(orgs.Value.Organizations, new ParallelOptions { MaxDegreeOfParallelism = 5 }, x => Parallel.ForEach(x.Repos, new ParallelOptions { MaxDegreeOfParallelism = 5 }, y => UpdateRepo(x.Organization, y, orgs.Value.Path, line++, false, 5, action)));
                 MutexConsole.WriteLine("Done", line);
+
                 MutexConsole.Clear();
+                MutexConsole.WriteLine($"{DateTime.Now} Done", null);
 
                 //Attention repositories
                 if (SomeDiff == null || SomeDiff.Count == 0)
@@ -126,8 +128,8 @@ namespace GitSync
                 orgs.Value.Organizations.ForEach(x =>
                 {
                     List<string> dirs = [.. Directory.GetDirectories(Path.Combine(orgs.Value.Path, x.Organization))];
-                    List<string> expectedFolders = x.Repos.Select(y => Path.Combine(orgs.Value.Path, x.Organization, y)).ToList();
-                    List<string> mismatchFolders = dirs.Except(expectedFolders).ToList();
+                    List<string> expectedFolders = [.. x.Repos.Select(y => Path.Combine(orgs.Value.Path, x.Organization, y))];
+                    List<string> mismatchFolders = [.. dirs.Except(expectedFolders)];
                     if (mismatchFolders.Count > 0)
                     {
                         MutexConsole.WriteLine("Furthermore, these folders are not remote repositories of " + x.Organization, null, ConsoleColor.Yellow);
