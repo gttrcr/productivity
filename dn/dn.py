@@ -5,8 +5,18 @@ import subprocess
 from pathlib import Path
 
 parser = argparse.ArgumentParser("dESIGNER nOTIFIER")
-parser.add_argument("folder", help="Folder to check", type=str)
+parser.add_argument("folder", help="Folder to check", default=".")
+parser.add_argument("provider", help="pyqt6/pyside6", default="pyside6")
 args = parser.parse_args()
+if not args.folder:
+    args.folder = "."
+if not args.provider:
+    args.provider = "pyside6"
+
+print(f"Folder: {args.folder}")
+print(f"Provider: {args.provider}")
+print("Press a key to continue...")
+input()
 folder = args.folder
 folder = Path(os.path.abspath(folder))
 
@@ -25,8 +35,14 @@ while True:
         print(f"{fn}. Changes have been intercepted...")
         print(f"\tOutput is {output}")
         print("\tCompiling...")
-        cmd = ["/usr/bin/pyuic6", f"{fn}", f"-o{output}"]
-        subprocess.call(cmd)
+
+        cmd = []
+        if args.provider == "pyqt6":
+            cmd = f"/usr/bin/pyuic6 {fn} -o {output}"
+        elif args.provider == "pyside6":
+            cmd = f"pyside6-uic {fn} -o {output}"
+
+        subprocess.call(cmd, shell=True)
 
         if not Path(output).is_file():
             print("\tSomething went wrong")
