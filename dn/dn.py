@@ -30,7 +30,7 @@ while True:
     fns = list(filter(lambda x: x[0] not in inputs.keys() or x[1] > inputs[x[0]], fns))
     for fn, mtime in fns:
         output = Path(fn).stem[0].title() + Path(fn).stem[1:]
-        output = os.path.join(Path(fn).parent, f"UI{output}.py")
+        output = os.path.join(Path(fn).parent, f"{output}.py")
 
         print(f"{fn}. Changes have been intercepted...")
         print(f"\tOutput is {output}")
